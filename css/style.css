@@ -289,7 +289,7 @@ button {
   padding: 2px 5px;
   border-radius: 4px;
   overflow: hidden;
-  text-overflow: ellipsis;
+  text-overflow: clip;
   white-space: nowrap;
   cursor: pointer;
 }
@@ -399,7 +399,7 @@ button {
   display: block;
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis;
+  text-overflow: clip;
   padding-right: 8px;
 }
 
@@ -439,7 +439,7 @@ button {
   padding: 3px 6px;
   font-size: 0.72rem;
   overflow: hidden;
-  text-overflow: ellipsis;
+  text-overflow: clip;
   white-space: nowrap;
   cursor: pointer;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
@@ -736,22 +736,22 @@ button {
 
   .fc-month-cell-date,
   .fc-timeline-row-date {
-    font-size: 0.74rem;
+    font-size: 0.68rem;
   }
 
   .fc-month-cell-holiday-name,
   .fc-timeline-row-holiday {
-    font-size: 0.56rem;
+    font-size: 0.5rem;
   }
 
   .fc-event-chip,
   .fc-allday-bar,
   .fc-timed-event {
-    font-size: 0.6rem;
+    font-size: 0.54rem;
   }
 
   .fc-event-chip {
-    padding: 1px 3px;
+    padding: 1px 2px;
   }
 
   .fc-month-view {
@@ -771,13 +771,13 @@ button {
 
   .fc-month-cell-date,
   .fc-timeline-row-date {
-    font-size: 0.68rem;
+    font-size: 0.62rem;
   }
 
   .fc-event-chip,
   .fc-allday-bar,
   .fc-timed-event {
-    font-size: 0.56rem;
+    font-size: 0.5rem;
   }
 
   .fc-month-cell {
@@ -785,6 +785,6 @@ button {
   }
 
   .fc-event-chip {
-    padding: 1px 2px;
+    padding: 0 2px;
   }
 }
