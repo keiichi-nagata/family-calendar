@@ -727,17 +727,31 @@ button {
 
   .fc-month-cell {
     min-height: 80px;
-    padding: 3px;
+    padding: 2px;
   }
 
   .fc-month-cell-events {
     max-height: 90px;
   }
 
+  .fc-month-cell-date,
+  .fc-timeline-row-date {
+    font-size: 0.74rem;
+  }
+
+  .fc-month-cell-holiday-name,
+  .fc-timeline-row-holiday {
+    font-size: 0.56rem;
+  }
+
   .fc-event-chip,
   .fc-allday-bar,
   .fc-timed-event {
-    font-size: 0.66rem;
+    font-size: 0.6rem;
+  }
+
+  .fc-event-chip {
+    padding: 1px 3px;
   }
 
   .fc-month-view {
@@ -753,5 +767,24 @@ button {
   .fc-tab-btn {
     padding: 6px 8px;
     font-size: 0.8rem;
+  }
+
+  .fc-month-cell-date,
+  .fc-timeline-row-date {
+    font-size: 0.68rem;
+  }
+
+  .fc-event-chip,
+  .fc-allday-bar,
+  .fc-timed-event {
+    font-size: 0.56rem;
+  }
+
+  .fc-month-cell {
+    padding: 1px;
+  }
+
+  .fc-event-chip {
+    padding: 1px 2px;
   }
 }
