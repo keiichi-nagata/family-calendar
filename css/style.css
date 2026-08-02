@@ -661,6 +661,46 @@ button {
   border-color: #1a1a1a;
 }
 
+/* ---------- オンライン共有設定 ---------- */
+.fc-sync-hint {
+  font-size: 0.82rem;
+  color: var(--fc-text-muted);
+  margin: 0 0 10px;
+  line-height: 1.5;
+}
+
+.fc-sync-status {
+  background: #f0f8f2;
+  border: 1px solid #bfe3c8;
+  border-radius: 8px;
+  padding: 12px 14px;
+}
+
+.fc-sync-status p {
+  margin: 0 0 8px;
+  font-size: 0.88rem;
+}
+
+.fc-sync-code-row {
+  display: flex;
+  gap: 8px;
+}
+
+.fc-sync-code-row input {
+  flex: 1 1 auto;
+}
+
+.fc-sync-error {
+  color: var(--fc-danger);
+  font-size: 0.82rem;
+  min-height: 1.2em;
+  margin: 4px 0 10px;
+}
+
+.fc-sync-form .fc-form-row {
+  margin-bottom: 10px;
+}
+
 /* ---------- レスポンシブ ---------- */
 @media (max-width: 720px) {
   .fc-app-title {

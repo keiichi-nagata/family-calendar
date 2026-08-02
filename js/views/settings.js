@@ -150,6 +150,97 @@
     container.appendChild(addRow);
   }
 
+  function renderSync(container) {
+    container.innerHTML = '';
+    const Sync = global.FCSync;
+    if (!Sync) {
+      container.textContent = '同期機能は利用できません。';
+      return;
+    }
+
+    if (Sync.isConnected()) {
+      const cfg = Sync.loadSyncConfig();
+      const box = document.createElement('div');
+      box.className = 'fc-sync-status';
+      box.innerHTML = `
+        <p>🟢 共有コード「<strong>${escapeHtml(cfg ? cfg.familyCode : '')}</strong>」でオンライン同期中です。</p>
+        <p class="fc-sync-hint">他の端末でも同じFirebaseプロジェクトの情報とこの共有コードを設定すると、予定がリアルタイムに共有されます。</p>
+        <button type="button" class="fc-btn fc-btn-danger fc-sync-disconnect">切断してこの端末だけで使う</button>
+      `;
+      box.querySelector('.fc-sync-disconnect').addEventListener('click', () => {
+        if (confirm('オンライン共有を切断しますか？以降はこの端末内のデータのみで動作します。')) {
+          Sync.disconnect();
+        }
+      });
+      container.appendChild(box);
+      return;
+    }
+
+    const form = document.createElement('div');
+    form.className = 'fc-sync-form';
+    form.innerHTML = `
+      <p class="fc-sync-hint">Firebaseプロジェクトを設定すると、家族のスマホ・PC間で予定をリアルタイム共有できます（任意）。未設定の場合はこの端末内のみの保存になります。</p>
+      <div class="fc-form-row"><label>API Key</label><input type="text" class="fc-sync-apiKey" /></div>
+      <div class="fc-form-row"><label>Auth Domain</label><input type="text" class="fc-sync-authDomain" /></div>
+      <div class="fc-form-row"><label>Project ID</label><input type="text" class="fc-sync-projectId" /></div>
+      <div class="fc-form-row"><label>Storage Bucket</label><input type="text" class="fc-sync-storageBucket" /></div>
+      <div class="fc-form-row"><label>Messaging Sender ID</label><input type="text" class="fc-sync-messagingSenderId" /></div>
+      <div class="fc-form-row"><label>App ID</label><input type="text" class="fc-sync-appId" /></div>
+      <div class="fc-form-row">
+        <label>共有コード（家族で共通の合言葉）</label>
+        <div class="fc-sync-code-row">
+          <input type="text" class="fc-sync-familyCode" placeholder="例: yamada-family-2026" />
+          <button type="button" class="fc-btn fc-btn-secondary fc-sync-generate-code">自動生成</button>
+        </div>
+      </div>
+      <button type="button" class="fc-btn fc-btn-primary fc-sync-connect">接続する</button>
+      <p class="fc-sync-error"></p>
+    `;
+
+    form.querySelector('.fc-sync-generate-code').addEventListener('click', () => {
+      const code = `${Math.random().toString(36).slice(2, 8)}-${Math.random().toString(36).slice(2, 6)}`;
+      form.querySelector('.fc-sync-familyCode').value = code;
+    });
+
+    const errorEl = form.querySelector('.fc-sync-error');
+    form.querySelector('.fc-sync-connect').addEventListener('click', async () => {
+      const cfg = {
+        apiKey: form.querySelector('.fc-sync-apiKey').value.trim(),
+        authDomain: form.querySelector('.fc-sync-authDomain').value.trim(),
+        projectId: form.querySelector('.fc-sync-projectId').value.trim(),
+        storageBucket: form.querySelector('.fc-sync-storageBucket').value.trim(),
+        messagingSenderId: form.querySelector('.fc-sync-messagingSenderId').value.trim(),
+        appId: form.querySelector('.fc-sync-appId').value.trim(),
+        familyCode: form.querySelector('.fc-sync-familyCode').value.trim(),
+      };
+      if (!cfg.apiKey || !cfg.projectId || !cfg.appId || !cfg.familyCode) {
+        errorEl.textContent = 'API Key・Project ID・App ID・共有コードは必須です。';
+        return;
+      }
+      const btn = form.querySelector('.fc-sync-connect');
+      btn.disabled = true;
+      btn.textContent = '接続中...';
+      errorEl.textContent = '';
+      try {
+        await Sync.connect(cfg, (remoteData) => {
+          const remoteCount = (remoteData.events || []).length;
+          const localCount = State.data.events.length;
+          return confirm(
+            `共有コード「${cfg.familyCode}」には既にデータがあります（予定${remoteCount}件）。\n\n` +
+              `[OK] 共有データを使う（この端末のローカルデータ${localCount}件は破棄されます）\n` +
+              `[キャンセル] この端末のデータで共有データを上書きする`
+          );
+        });
+      } catch (err) {
+        errorEl.textContent = '接続に失敗しました: ' + err.message;
+        btn.disabled = false;
+        btn.textContent = '接続する';
+      }
+    });
+
+    container.appendChild(form);
+  }
+
   function open() {
     const wrap = document.createElement('div');
     wrap.className = 'fc-settings';
@@ -162,19 +253,29 @@
         <h3>よく使う予定テンプレート</h3>
         <div class="fc-templates-container"></div>
       </section>
+      <section class="fc-settings-section">
+        <h3>オンライン共有（複数端末で同期）</h3>
+        <div class="fc-sync-container"></div>
+      </section>
     `;
 
     const membersContainer = wrap.querySelector('.fc-members-container');
     const templatesContainer = wrap.querySelector('.fc-templates-container');
+    const syncContainer = wrap.querySelector('.fc-sync-container');
 
     function refresh() {
       renderMembers(membersContainer);
       renderTemplates(templatesContainer);
+      renderSync(syncContainer);
     }
     refresh();
 
-    const unsubscribe = State.onChange(refresh);
-    global.FCModal.show('設定', wrap, unsubscribe);
+    const unsubscribeState = State.onChange(refresh);
+    const unsubscribeSync = global.FCSync ? global.FCSync.onStatusChange(refresh) : null;
+    global.FCModal.show('設定', wrap, () => {
+      unsubscribeState();
+      if (unsubscribeSync) unsubscribeSync();
+    });
   }
 
   global.FCSettings = { open };

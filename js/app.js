@@ -87,6 +87,13 @@
   });
 
   State.onChange(renderCalendar);
+  if (global.FCSync) {
+    global.FCSync.onStatusChange((status, message) => {
+      if (status === 'error') console.warn('オンライン同期エラー:', message);
+    });
+    // 再接続時はプロンプトを出さず常にクラウド側のデータを正として取り込む
+    global.FCSync.autoConnectIfConfigured(() => true);
+  }
 
   renderCalendar();
 })(window);

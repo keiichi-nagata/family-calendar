@@ -28,6 +28,17 @@
     notify();
   }
 
+  // 他端末（Firestore等）から受け取ったデータで丸ごと置き換える
+  function replaceAll(newData) {
+    data = {
+      members: Array.isArray(newData.members) ? newData.members : [],
+      templates: Array.isArray(newData.templates) ? newData.templates : [],
+      events: Array.isArray(newData.events) ? newData.events : [],
+    };
+    persist();
+    notify();
+  }
+
   // --- 家族メンバー ---
   function addMember(name, color) {
     data.members.push({ id: uid(), name: name.trim(), color });
@@ -111,6 +122,7 @@
       return data;
     },
     onChange,
+    replaceAll,
     addMember,
     updateMember,
     deleteMember,
