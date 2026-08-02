@@ -102,18 +102,6 @@
     return { r: (num >> 16) & 255, g: (num >> 8) & 255, b: num & 255 };
   }
 
-  // 複数メンバーの色をストライプ状のグラデーション背景にする
-  function buildStripedBackground(colors) {
-    if (!colors || colors.length === 0) return '#9e9e9e';
-    if (colors.length === 1) return colors[0];
-    const step = 100 / colors.length;
-    const stops = [];
-    colors.forEach((c, i) => {
-      stops.push(`${c} ${i * step}%`, `${c} ${(i + 1) * step}%`);
-    });
-    return `linear-gradient(90deg, ${stops.join(', ')})`;
-  }
-
   global.FCUtils = {
     WEEKDAY_LABELS,
     pad2,
@@ -133,6 +121,5 @@
     uid,
     contrastTextColor,
     hexToRgb,
-    buildStripedBackground,
   };
 })(window);

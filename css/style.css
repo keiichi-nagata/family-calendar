@@ -375,33 +375,22 @@ button {
 
 .fc-timeline-allday-strip {
   display: flex;
-  align-items: center;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 3px;
   padding: 3px 4px;
   border-bottom: 1px dashed var(--fc-border);
   background: #fbfbfd;
-  /* 終日枠は時間軸のスクロールに追従させず、常に見える位置に固定する */
-  position: sticky;
-  left: 96px;
-  align-self: flex-start;
-  z-index: 1;
-  width: max-content;
-  max-width: calc(100vw - 130px);
 }
 
-.fc-allday-label {
-  font-size: 0.68rem;
-  color: var(--fc-text-muted);
-  margin-right: 2px;
-}
-
-.fc-allday-chip {
-  font-size: 0.72rem;
-  padding: 2px 6px;
+.fc-allday-bar {
+  font-size: 0.74rem;
+  padding: 4px 8px;
   border-radius: 4px;
   cursor: pointer;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
 }
 
 .fc-timeline-track {
@@ -736,7 +725,7 @@ button {
   }
 
   .fc-event-chip,
-  .fc-allday-chip,
+  .fc-allday-bar,
   .fc-timed-event {
     font-size: 0.66rem;
   }

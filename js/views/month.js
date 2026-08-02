@@ -13,12 +13,10 @@
     return '';
   }
 
-  function buildEventChip(evt) {
-    const members = State.getMembersByIds(evt.memberIds);
-    const colors = members.map((m) => m.color);
-    const bg = U.buildStripedBackground(colors);
-    const textColor = colors.length === 1 ? U.contrastTextColor(colors[0]) : '#ffffff';
-    const namePrefix = members.length ? `[${members.map((m) => m.name).join('・')}] ` : '';
+  function buildEventChip(evt, member) {
+    const bg = member ? member.color : '#9e9e9e';
+    const textColor = member ? U.contrastTextColor(member.color) : '#ffffff';
+    const namePrefix = member ? `[${member.name}] ` : '';
 
     const chip = document.createElement('div');
     chip.className = 'fc-event-chip';
@@ -28,6 +26,13 @@
     chip.title = `${namePrefix}${evt.title}`;
     chip.textContent = `${namePrefix}${evt.title}`;
     return chip;
+  }
+
+  // 担当家族が複数いる予定は、家族ごとに1行ずつ表示する
+  function buildEventChips(evt) {
+    const members = State.getMembersByIds(evt.memberIds);
+    if (members.length === 0) return [buildEventChip(evt, null)];
+    return members.map((member) => buildEventChip(evt, member));
   }
 
   function render(container, refDate, callbacks) {
@@ -100,12 +105,13 @@
       const eventsWrap = document.createElement('div');
       eventsWrap.className = 'fc-month-cell-events';
       State.getEventsForDate(dateKey).forEach((evt) => {
-        const chip = buildEventChip(evt);
-        chip.addEventListener('click', (ev) => {
-          ev.stopPropagation();
-          callbacks.onEventClick(evt.id);
+        buildEventChips(evt).forEach((chip) => {
+          chip.addEventListener('click', (ev) => {
+            ev.stopPropagation();
+            callbacks.onEventClick(evt.id);
+          });
+          eventsWrap.appendChild(chip);
         });
-        eventsWrap.appendChild(chip);
       });
       cell.appendChild(eventsWrap);
 
