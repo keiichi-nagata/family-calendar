@@ -27,6 +27,7 @@ body {
   font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Meiryo', -apple-system, BlinkMacSystemFont, sans-serif;
   background: var(--fc-bg);
   color: var(--fc-text);
+  overflow-x: hidden;
 }
 
 #app {
@@ -173,6 +174,7 @@ button {
   flex: 1 1 auto;
   overflow: auto;
   padding: 10px;
+  min-width: 0;
 }
 
 /* ---------- 月表示 ---------- */
@@ -196,6 +198,7 @@ button {
   text-align: center;
   font-size: 0.85rem;
   font-weight: 600;
+  min-width: 0;
 }
 
 .fc-month-body {
@@ -205,6 +208,7 @@ button {
 
 .fc-month-cell {
   min-height: 112px;
+  min-width: 0;
   border-right: 1px solid var(--fc-border);
   border-bottom: 1px solid var(--fc-border);
   padding: 4px;
@@ -384,13 +388,19 @@ button {
 
 .fc-allday-bar {
   font-size: 0.74rem;
-  padding: 4px 8px;
+  padding: 4px 0;
   border-radius: 4px;
   cursor: pointer;
+  overflow: hidden;
+  width: 100%;
+}
+
+.fc-allday-bar-label {
+  display: block;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  width: 100%;
+  padding-right: 8px;
 }
 
 .fc-timeline-track {

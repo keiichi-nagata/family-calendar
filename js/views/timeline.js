@@ -84,7 +84,7 @@
     return block;
   }
 
-  function buildAllDayBar(inst) {
+  function buildAllDayBar(inst, hourWidth) {
     const { evt, member } = inst;
     const bg = member ? member.color : '#9e9e9e';
     const textColor = member ? U.contrastTextColor(member.color) : '#ffffff';
@@ -96,7 +96,13 @@
     bar.style.color = textColor;
     bar.dataset.eventId = evt.id;
     bar.title = `${namePrefix}${evt.title}`;
-    bar.textContent = `${namePrefix}${evt.title}`;
+
+    // 予定名は既定の表示開始位置である8:00の位置から見えるようにする
+    const label = document.createElement('span');
+    label.className = 'fc-allday-bar-label';
+    label.style.paddingLeft = `${CORE_START_HOUR * hourWidth}px`;
+    label.textContent = `${namePrefix}${evt.title}`;
+    bar.appendChild(label);
     return bar;
   }
 
@@ -146,7 +152,7 @@
       stripWrap.className = 'fc-timeline-allday-strip';
       stripWrap.style.width = `${trackWidth}px`;
       allDayInstances.forEach((inst) => {
-        const bar = buildAllDayBar(inst);
+        const bar = buildAllDayBar(inst, hourWidth);
         bar.addEventListener('click', (ev) => {
           ev.stopPropagation();
           callbacks.onEventClick(inst.evt.id);

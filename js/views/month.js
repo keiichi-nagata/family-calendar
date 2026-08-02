@@ -17,13 +17,16 @@
     const bg = member ? member.color : '#9e9e9e';
     const textColor = member ? U.contrastTextColor(member.color) : '#ffffff';
     const namePrefix = member ? `[${member.name}] ` : '';
+    const timePrefix = !evt.allDay && evt.startTime
+      ? `${evt.startTime}${evt.endTime ? '〜' + evt.endTime : ''} `
+      : '';
 
     const chip = document.createElement('div');
     chip.className = 'fc-event-chip';
     chip.style.background = bg;
     chip.style.color = textColor;
     chip.dataset.eventId = evt.id;
-    chip.title = `${namePrefix}${evt.title}`;
+    chip.title = `${timePrefix}${namePrefix}${evt.title}`;
     chip.textContent = `${namePrefix}${evt.title}`;
     return chip;
   }
