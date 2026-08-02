@@ -19,7 +19,6 @@
     const bg = U.buildStripedBackground(colors);
     const textColor = colors.length === 1 ? U.contrastTextColor(colors[0]) : '#ffffff';
     const namePrefix = members.length ? `[${members.map((m) => m.name).join('・')}] ` : '';
-    const timePrefix = !evt.allDay && evt.startTime ? `${evt.startTime} ` : '';
 
     const chip = document.createElement('div');
     chip.className = 'fc-event-chip';
@@ -27,7 +26,7 @@
     chip.style.color = textColor;
     chip.dataset.eventId = evt.id;
     chip.title = `${namePrefix}${evt.title}`;
-    chip.textContent = `${timePrefix}${namePrefix}${evt.title}`;
+    chip.textContent = `${namePrefix}${evt.title}`;
     return chip;
   }
 

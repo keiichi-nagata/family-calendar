@@ -63,7 +63,7 @@
     block.style.color = textColor;
     block.dataset.eventId = evt.id;
     block.title = `${evt.startTime}${evt.endTime ? '〜' + evt.endTime : ''} ${namePrefix}${evt.title}`;
-    block.textContent = `${evt.startTime} ${namePrefix}${evt.title}`;
+    block.textContent = `${namePrefix}${evt.title}`;
     return block;
   }
 
