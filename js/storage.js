@@ -21,10 +21,11 @@
   function defaultData() {
     return {
       members: [
-        { id: 'm-father', name: 'お父さん', color: '#F08300' },
-        { id: 'm-mother', name: 'お母さん', color: '#009944' },
-        { id: 'm-child1', name: '子ども1', color: '#00A497' },
-        { id: 'm-child2', name: '子ども2', color: '#E4007F' },
+        { id: 'm-all', name: '全員', color: '#E60033' },
+        { id: 'm-father', name: '父', color: '#F08300' },
+        { id: 'm-mother', name: '母', color: '#009944' },
+        { id: 'm-child1', name: '子供1', color: '#00A497' },
+        { id: 'm-child2', name: '子供2', color: '#E4007F' },
       ],
       templates: [
         { id: 't-1', name: '休み' },
