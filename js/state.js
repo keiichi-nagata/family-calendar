@@ -117,6 +117,12 @@
     return (ids || []).map((id) => getMember(id)).filter(Boolean);
   }
 
+  // 家族設定での並び順（登録順）でのインデックスを返す。見つからない場合は末尾扱い
+  function getMemberIndex(id) {
+    const idx = data.members.findIndex((x) => x.id === id);
+    return idx === -1 ? Infinity : idx;
+  }
+
   global.FCState = {
     get data() {
       return data;
@@ -135,5 +141,6 @@
     getEventsForDate,
     getMember,
     getMembersByIds,
+    getMemberIndex,
   };
 })(window);

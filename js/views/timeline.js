@@ -38,19 +38,27 @@
     return out;
   }
 
+  // 家族設定の並び順を優先し、同じ家族内では開始時刻順にする
+  function sortByMemberOrder(instances) {
+    return instances.slice().sort((a, b) => {
+      const ia = a.member ? State.getMemberIndex(a.member.id) : Infinity;
+      const ib = b.member ? State.getMemberIndex(b.member.id) : Infinity;
+      if (ia !== ib) return ia - ib;
+      return U.timeToMinutes(a.evt.startTime) - U.timeToMinutes(b.evt.startTime);
+    });
+  }
+
   function assignLanes(instances) {
-    const sorted = instances
-      .map((inst) => ({
-        inst,
-        start: U.timeToMinutes(inst.evt.startTime),
-        end: inst.evt.endTime
-          ? U.timeToMinutes(inst.evt.endTime)
-          : U.timeToMinutes(inst.evt.startTime) + DEFAULT_DURATION,
-      }))
-      .sort((a, b) => a.start - b.start);
+    const items = instances.map((inst) => ({
+      inst,
+      start: U.timeToMinutes(inst.evt.startTime),
+      end: inst.evt.endTime
+        ? U.timeToMinutes(inst.evt.endTime)
+        : U.timeToMinutes(inst.evt.startTime) + DEFAULT_DURATION,
+    }));
 
     const laneEnds = [];
-    sorted.forEach((item) => {
+    items.forEach((item) => {
       let lane = laneEnds.findIndex((end) => end <= item.start);
       if (lane === -1) {
         lane = laneEnds.length;
@@ -58,7 +66,7 @@
       laneEnds[lane] = Math.max(item.end, item.start + 15);
       item.lane = lane;
     });
-    return { items: sorted, laneCount: Math.max(1, laneEnds.length) };
+    return { items, laneCount: Math.max(1, laneEnds.length) };
   }
 
   function buildEventBlock(item, hourWidth) {
@@ -144,8 +152,8 @@
     main.className = 'fc-timeline-row-main';
 
     const allEvents = State.getEventsForDate(dateKey);
-    const allDayInstances = explodeByMember(allEvents.filter((e) => e.allDay));
-    const timedInstances = explodeByMember(allEvents.filter((e) => !e.allDay));
+    const allDayInstances = sortByMemberOrder(explodeByMember(allEvents.filter((e) => e.allDay)));
+    const timedInstances = sortByMemberOrder(explodeByMember(allEvents.filter((e) => !e.allDay)));
 
     if (allDayInstances.length) {
       const stripWrap = document.createElement('div');

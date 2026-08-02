@@ -33,11 +33,26 @@
     return chip;
   }
 
-  // 担当家族が複数いる予定は、家族ごとに1行ずつ表示する
-  function buildEventChips(evt) {
-    const members = State.getMembersByIds(evt.memberIds);
-    if (members.length === 0) return [buildEventChip(evt, null)];
-    return members.map((member) => buildEventChip(evt, member));
+  // 担当家族が複数いる予定は家族ごとに1行ずつに分解し、家族設定の並び順で表示する
+  function getSortedInstances(dateKey) {
+    const instances = [];
+    State.getEventsForDate(dateKey).forEach((evt) => {
+      const members = State.getMembersByIds(evt.memberIds);
+      if (members.length === 0) {
+        instances.push({ evt, member: null });
+      } else {
+        members.forEach((member) => instances.push({ evt, member }));
+      }
+    });
+    instances.sort((a, b) => {
+      const ia = a.member ? State.getMemberIndex(a.member.id) : Infinity;
+      const ib = b.member ? State.getMemberIndex(b.member.id) : Infinity;
+      if (ia !== ib) return ia - ib;
+      if (a.evt.allDay && !b.evt.allDay) return -1;
+      if (!a.evt.allDay && b.evt.allDay) return 1;
+      return (a.evt.startTime || '').localeCompare(b.evt.startTime || '');
+    });
+    return instances;
   }
 
   function render(container, refDate, callbacks) {
@@ -109,14 +124,13 @@
 
       const eventsWrap = document.createElement('div');
       eventsWrap.className = 'fc-month-cell-events';
-      State.getEventsForDate(dateKey).forEach((evt) => {
-        buildEventChips(evt).forEach((chip) => {
-          chip.addEventListener('click', (ev) => {
-            ev.stopPropagation();
-            callbacks.onEventClick(evt.id);
-          });
-          eventsWrap.appendChild(chip);
+      getSortedInstances(dateKey).forEach(({ evt, member }) => {
+        const chip = buildEventChip(evt, member);
+        chip.addEventListener('click', (ev) => {
+          ev.stopPropagation();
+          callbacks.onEventClick(evt.id);
         });
+        eventsWrap.appendChild(chip);
       });
       cell.appendChild(eventsWrap);
 
