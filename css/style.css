@@ -1,0 +1,718 @@
+:root {
+  --fc-color-sunday: #e4007f;
+  --fc-color-saturday: #00a0e9;
+  --fc-color-holiday: #e4007f;
+  --fc-border: #dfe3e8;
+  --fc-bg: #f7f8fa;
+  --fc-surface: #ffffff;
+  --fc-text: #23272f;
+  --fc-text-muted: #6b7280;
+  --fc-primary: #2f6feb;
+  --fc-primary-dark: #1d4fb8;
+  --fc-danger: #d64545;
+  --fc-radius: 8px;
+  --fc-header-h: auto;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Meiryo', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--fc-bg);
+  color: var(--fc-text);
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+button {
+  font-family: inherit;
+}
+
+/* ---------- ヘッダー ---------- */
+.fc-header {
+  background: var(--fc-surface);
+  border-bottom: 1px solid var(--fc-border);
+  padding: 10px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 0 0 auto;
+}
+
+.fc-header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.fc-app-title {
+  font-size: 1.3rem;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.fc-header-top-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.fc-header-controls {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.fc-view-tabs {
+  display: flex;
+  border: 1px solid var(--fc-border);
+  border-radius: var(--fc-radius);
+  overflow: hidden;
+}
+
+.fc-tab-btn {
+  border: none;
+  background: var(--fc-surface);
+  color: var(--fc-text);
+  padding: 7px 14px;
+  cursor: pointer;
+  border-right: 1px solid var(--fc-border);
+  font-size: 0.9rem;
+}
+
+.fc-tab-btn:last-child {
+  border-right: none;
+}
+
+.fc-tab-btn.active {
+  background: var(--fc-primary);
+  color: #fff;
+}
+
+.fc-nav-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.fc-nav-btn {
+  width: 34px;
+  padding: 6px 0;
+}
+
+.fc-period-title {
+  font-size: 1.05rem;
+  margin: 0;
+  white-space: nowrap;
+}
+
+/* ---------- ボタン共通 ---------- */
+.fc-btn {
+  border: 1px solid var(--fc-border);
+  background: var(--fc-surface);
+  color: var(--fc-text);
+  border-radius: var(--fc-radius);
+  padding: 7px 12px;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.fc-btn:hover {
+  background: #eef1f5;
+}
+
+.fc-btn-primary {
+  background: var(--fc-primary);
+  border-color: var(--fc-primary);
+  color: #fff;
+}
+
+.fc-btn-primary:hover {
+  background: var(--fc-primary-dark);
+}
+
+.fc-btn-secondary {
+  background: var(--fc-surface);
+}
+
+.fc-btn-danger {
+  color: var(--fc-danger);
+  border-color: var(--fc-danger);
+}
+
+.fc-btn-danger:hover {
+  background: #fdecec;
+}
+
+.fc-btn-small {
+  padding: 4px 8px;
+  font-size: 0.78rem;
+}
+
+/* ---------- 曜日・祝日の配色 ---------- */
+.fc-color-sunday { color: var(--fc-color-sunday); }
+.fc-color-saturday { color: var(--fc-color-saturday); }
+.fc-color-holiday { color: var(--fc-color-holiday); }
+
+/* ---------- カレンダー本体 ---------- */
+.fc-calendar-body {
+  flex: 1 1 auto;
+  overflow: auto;
+  padding: 10px;
+}
+
+/* ---------- 月表示 ---------- */
+.fc-month-view {
+  background: var(--fc-surface);
+  border: 1px solid var(--fc-border);
+  border-radius: var(--fc-radius);
+  overflow: hidden;
+  min-width: 640px;
+}
+
+.fc-month-header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  background: #eef1f5;
+  border-bottom: 1px solid var(--fc-border);
+}
+
+.fc-month-header-cell {
+  padding: 8px 4px;
+  text-align: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.fc-month-body {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.fc-month-cell {
+  min-height: 112px;
+  border-right: 1px solid var(--fc-border);
+  border-bottom: 1px solid var(--fc-border);
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+}
+
+.fc-month-cell:nth-child(7n) {
+  border-right: none;
+}
+
+.fc-month-cell:hover {
+  background: #fafcff;
+}
+
+.fc-outside-month {
+  background: #f9fafb;
+  color: #b7bdc6;
+}
+
+.fc-outside-month .fc-month-cell-date {
+  opacity: 0.5;
+}
+
+.fc-today {
+  background: #fff8e6;
+}
+
+.fc-month-cell-header {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  margin-bottom: 2px;
+}
+
+.fc-month-cell-date {
+  font-weight: 700;
+  font-size: 0.92rem;
+}
+
+.fc-month-cell-holiday-name {
+  font-size: 0.62rem;
+  color: var(--fc-color-holiday);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1 1 auto;
+}
+
+.fc-add-event-btn {
+  margin-left: auto;
+  border: none;
+  background: transparent;
+  color: var(--fc-primary);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 2px;
+  visibility: hidden;
+}
+
+.fc-month-cell:hover .fc-add-event-btn {
+  visibility: visible;
+}
+
+.fc-month-cell-events {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow-y: auto;
+  flex: 1 1 auto;
+  max-height: 140px;
+}
+
+.fc-event-chip {
+  font-size: 0.72rem;
+  padding: 2px 5px;
+  border-radius: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+/* ---------- 週表示・日表示（タイムライン） ---------- */
+.fc-timeline-view {
+  background: var(--fc-surface);
+  border: 1px solid var(--fc-border);
+  border-radius: var(--fc-radius);
+  overflow: hidden;
+  height: 100%;
+}
+
+.fc-timeline-scroll {
+  overflow: auto;
+  height: 100%;
+  max-height: calc(100vh - 170px);
+}
+
+.fc-timeline-inner {
+  width: max-content;
+}
+
+.fc-timeline-header-row {
+  display: flex;
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  background: #eef1f5;
+  border-bottom: 1px solid var(--fc-border);
+}
+
+.fc-timeline-corner {
+  position: sticky;
+  left: 0;
+  z-index: 4;
+  width: 96px;
+  flex: 0 0 auto;
+  background: #eef1f5;
+  border-right: 1px solid var(--fc-border);
+}
+
+.fc-timeline-hours {
+  display: flex;
+}
+
+.fc-hour-label {
+  flex: 0 0 auto;
+  font-size: 0.72rem;
+  padding: 8px 0 8px 4px;
+  border-left: 1px solid var(--fc-border);
+  color: var(--fc-text-muted);
+}
+
+.fc-timeline-row {
+  display: flex;
+  border-bottom: 1px solid var(--fc-border);
+}
+
+.fc-timeline-row-label {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  width: 96px;
+  flex: 0 0 auto;
+  background: var(--fc-surface);
+  border-right: 1px solid var(--fc-border);
+  padding: 8px 6px;
+}
+
+.fc-timeline-row-date {
+  font-weight: 700;
+  font-size: 0.88rem;
+}
+
+.fc-timeline-row-holiday {
+  font-size: 0.62rem;
+  color: var(--fc-color-holiday);
+  margin-top: 2px;
+}
+
+.fc-timeline-row-main {
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 auto;
+}
+
+.fc-timeline-allday-strip {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 3px;
+  padding: 3px 4px;
+  border-bottom: 1px dashed var(--fc-border);
+  background: #fbfbfd;
+  /* 終日枠は時間軸のスクロールに追従させず、常に見える位置に固定する */
+  position: sticky;
+  left: 96px;
+  align-self: flex-start;
+  z-index: 1;
+  width: max-content;
+  max-width: calc(100vw - 130px);
+}
+
+.fc-allday-label {
+  font-size: 0.68rem;
+  color: var(--fc-text-muted);
+  margin-right: 2px;
+}
+
+.fc-allday-chip {
+  font-size: 0.72rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.fc-timeline-track {
+  position: relative;
+  background-image: repeating-linear-gradient(
+    to right,
+    var(--fc-border),
+    var(--fc-border) 1px,
+    transparent 1px,
+    transparent 100%
+  );
+  cursor: pointer;
+}
+
+.fc-core-hours {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: rgba(47, 111, 235, 0.06);
+  pointer-events: none;
+}
+
+.fc-now-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--fc-danger);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.fc-timed-event {
+  position: absolute;
+  border-radius: 5px;
+  padding: 3px 6px;
+  font-size: 0.72rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+}
+
+/* ---------- モーダル ---------- */
+.fc-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 22, 28, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 16px;
+}
+
+.fc-modal-dialog {
+  background: var(--fc-surface);
+  border-radius: 10px;
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+}
+
+.fc-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--fc-border);
+}
+
+.fc-modal-header h2 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.fc-modal-close {
+  border: none;
+  background: transparent;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--fc-text-muted);
+}
+
+.fc-modal-body {
+  padding: 16px 18px;
+  overflow-y: auto;
+}
+
+/* ---------- 予定フォーム ---------- */
+.fc-form-row {
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fc-form-row label {
+  font-size: 0.8rem;
+  color: var(--fc-text-muted);
+}
+
+.fc-form-row input[type="text"],
+.fc-form-row input[type="date"],
+.fc-form-row input[type="time"],
+.fc-form-row select,
+.fc-form-row textarea {
+  padding: 8px 10px;
+  border: 1px solid var(--fc-border);
+  border-radius: 6px;
+  font-size: 0.92rem;
+  width: 100%;
+}
+
+.fc-required {
+  color: var(--fc-danger);
+  font-size: 0.7rem;
+  margin-left: 6px;
+}
+
+.fc-form-row-checkbox label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.92rem;
+  color: var(--fc-text);
+}
+
+.fc-time-row {
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.fc-time-row label {
+  flex: 0 0 auto;
+}
+
+.fc-time-row input[type="time"] {
+  width: auto;
+  flex: 1 1 100px;
+}
+
+.fc-member-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.fc-member-check {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.88rem;
+  border: 1px solid var(--fc-border);
+  border-radius: 16px;
+  padding: 4px 10px;
+  cursor: pointer;
+}
+
+.fc-color-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+  flex: 0 0 auto;
+}
+
+.fc-form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 16px;
+  gap: 10px;
+}
+
+.fc-form-actions-right {
+  display: flex;
+  gap: 8px;
+}
+
+/* ---------- 設定画面 ---------- */
+.fc-settings-section {
+  margin-bottom: 22px;
+}
+
+.fc-settings-section h3 {
+  font-size: 0.95rem;
+  margin: 0 0 10px;
+  border-left: 4px solid var(--fc-primary);
+  padding-left: 8px;
+}
+
+.fc-settings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.fc-settings-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  border: 1px solid var(--fc-border);
+  border-radius: 6px;
+  padding: 6px 8px;
+}
+
+.fc-settings-row input[type="text"] {
+  flex: 1 1 120px;
+  min-width: 80px;
+  padding: 6px 8px;
+  border: 1px solid var(--fc-border);
+  border-radius: 5px;
+}
+
+.fc-settings-add-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.fc-settings-add-row input[type="text"] {
+  flex: 1 1 160px;
+  padding: 8px 10px;
+  border: 1px solid var(--fc-border);
+  border-radius: 6px;
+}
+
+.fc-color-palette {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  width: 100%;
+  margin-top: 6px;
+}
+
+.fc-color-swatch {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  padding: 0;
+}
+
+.fc-color-swatch-selected {
+  border-color: #1a1a1a;
+}
+
+/* ---------- レスポンシブ ---------- */
+@media (max-width: 720px) {
+  .fc-app-title {
+    font-size: 1.05rem;
+  }
+
+  .fc-header {
+    padding: 8px 10px;
+  }
+
+  .fc-header-controls {
+    justify-content: space-between;
+  }
+
+  .fc-period-title {
+    order: 3;
+    width: 100%;
+    text-align: center;
+  }
+
+  .fc-btn {
+    padding: 6px 9px;
+    font-size: 0.82rem;
+  }
+
+  .fc-month-cell {
+    min-height: 80px;
+    padding: 3px;
+  }
+
+  .fc-month-cell-events {
+    max-height: 90px;
+  }
+
+  .fc-event-chip,
+  .fc-allday-chip,
+  .fc-timed-event {
+    font-size: 0.66rem;
+  }
+
+  .fc-month-view {
+    min-width: 0;
+  }
+
+  .fc-modal-dialog {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .fc-tab-btn {
+    padding: 6px 8px;
+    font-size: 0.8rem;
+  }
+}
