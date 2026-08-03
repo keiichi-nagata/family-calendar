@@ -164,7 +164,7 @@
       box.className = 'fc-sync-status';
       box.innerHTML = `
         <p>🟢 共有コード「<strong>${escapeHtml(cfg ? cfg.familyCode : '')}</strong>」でオンライン同期中です。</p>
-        <p class="fc-sync-hint">他の端末でも同じFirebaseプロジェクトの情報とこの共有コードを設定すると、予定がリアルタイムに共有されます。</p>
+        <p class="fc-sync-hint">他の端末でもこの共有コードを入力して接続すると、予定がリアルタイムに共有されます。</p>
         <button type="button" class="fc-btn fc-btn-danger fc-sync-disconnect">切断してこの端末だけで使う</button>
       `;
       box.querySelector('.fc-sync-disconnect').addEventListener('click', () => {
@@ -179,13 +179,7 @@
     const form = document.createElement('div');
     form.className = 'fc-sync-form';
     form.innerHTML = `
-      <p class="fc-sync-hint">Firebaseプロジェクトを設定すると、家族のスマホ・PC間で予定をリアルタイム共有できます（任意）。未設定の場合はこの端末内のみの保存になります。</p>
-      <div class="fc-form-row"><label>API Key</label><input type="text" class="fc-sync-apiKey" /></div>
-      <div class="fc-form-row"><label>Auth Domain</label><input type="text" class="fc-sync-authDomain" /></div>
-      <div class="fc-form-row"><label>Project ID</label><input type="text" class="fc-sync-projectId" /></div>
-      <div class="fc-form-row"><label>Storage Bucket</label><input type="text" class="fc-sync-storageBucket" /></div>
-      <div class="fc-form-row"><label>Messaging Sender ID</label><input type="text" class="fc-sync-messagingSenderId" /></div>
-      <div class="fc-form-row"><label>App ID</label><input type="text" class="fc-sync-appId" /></div>
+      <p class="fc-sync-hint">共有コード（家族で共通の合言葉）を入力すると、家族のスマホ・PC間で予定をリアルタイム共有できます（任意）。未設定の場合はこの端末内のみの保存になります。</p>
       <div class="fc-form-row">
         <label>共有コード（家族で共通の合言葉）</label>
         <div class="fc-sync-code-row">
@@ -204,17 +198,9 @@
 
     const errorEl = form.querySelector('.fc-sync-error');
     form.querySelector('.fc-sync-connect').addEventListener('click', async () => {
-      const cfg = {
-        apiKey: form.querySelector('.fc-sync-apiKey').value.trim(),
-        authDomain: form.querySelector('.fc-sync-authDomain').value.trim(),
-        projectId: form.querySelector('.fc-sync-projectId').value.trim(),
-        storageBucket: form.querySelector('.fc-sync-storageBucket').value.trim(),
-        messagingSenderId: form.querySelector('.fc-sync-messagingSenderId').value.trim(),
-        appId: form.querySelector('.fc-sync-appId').value.trim(),
-        familyCode: form.querySelector('.fc-sync-familyCode').value.trim(),
-      };
-      if (!cfg.apiKey || !cfg.projectId || !cfg.appId || !cfg.familyCode) {
-        errorEl.textContent = 'API Key・Project ID・App ID・共有コードは必須です。';
+      const familyCode = form.querySelector('.fc-sync-familyCode').value.trim();
+      if (!familyCode) {
+        errorEl.textContent = '共有コードは必須です。';
         return;
       }
       const btn = form.querySelector('.fc-sync-connect');
@@ -222,11 +208,11 @@
       btn.textContent = '接続中...';
       errorEl.textContent = '';
       try {
-        await Sync.connect(cfg, (remoteData) => {
+        await Sync.connect(familyCode, (remoteData) => {
           const remoteCount = (remoteData.events || []).length;
           const localCount = State.data.events.length;
           return confirm(
-            `共有コード「${cfg.familyCode}」には既にデータがあります（予定${remoteCount}件）。\n\n` +
+            `共有コード「${familyCode}」には既にデータがあります（予定${remoteCount}件）。\n\n` +
               `[OK] 共有データを使う（この端末のローカルデータ${localCount}件は破棄されます）\n` +
               `[キャンセル] この端末のデータで共有データを上書きする`
           );

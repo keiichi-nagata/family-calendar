@@ -89,21 +89,14 @@
     connected = false;
   }
 
-  // cfg: { apiKey, authDomain, projectId, storageBucket, messagingSenderId, appId, familyCode }
+  // familyCode: 家族で共通の合言葉。Firebaseプロジェクトの接続情報自体は
+  // js/firebaseConfig.js に固定値として埋め込まれている
   // onConflict(remoteData) は、ローカルとリモート両方にデータがある場合に呼ばれ、
   // true を返すとリモート優先、false を返すとローカルでリモートを上書きする
-  async function connect(cfg, onConflict) {
+  async function connect(familyCode, onConflict) {
     await loadFirebaseSdk();
 
-    const firebaseConfig = {
-      apiKey: cfg.apiKey,
-      authDomain: cfg.authDomain,
-      projectId: cfg.projectId,
-      storageBucket: cfg.storageBucket,
-      messagingSenderId: cfg.messagingSenderId,
-      appId: cfg.appId,
-    };
-
+    const firebaseConfig = global.FC_FIREBASE_CONFIG;
     const app = global.firebase.apps && global.firebase.apps.length
       ? global.firebase.app()
       : global.firebase.initializeApp(firebaseConfig);
@@ -112,7 +105,7 @@
     await auth.signInAnonymously();
 
     const db = global.firebase.firestore(app);
-    const ref = db.collection('families').doc(cfg.familyCode);
+    const ref = db.collection('families').doc(familyCode);
     const snap = await ref.get();
 
     if (snap.exists) {
@@ -146,7 +139,7 @@
     });
 
     connected = true;
-    saveSyncConfig(cfg);
+    saveSyncConfig({ familyCode });
     notifyStatus('connected');
   }
 
@@ -158,8 +151,8 @@
 
   function autoConnectIfConfigured(onConflict) {
     const cfg = loadSyncConfig();
-    if (!cfg) return;
-    connect(cfg, onConflict).catch((err) => notifyStatus('error', err.message));
+    if (!cfg || !cfg.familyCode) return;
+    connect(cfg.familyCode, onConflict).catch((err) => notifyStatus('error', err.message));
   }
 
   function isConnected() {
