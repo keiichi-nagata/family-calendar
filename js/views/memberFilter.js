@@ -15,15 +15,32 @@
   }
 
   function init(buttonEl, panelEl) {
+    function close() {
+      panelEl.hidden = true;
+    }
+
     function renderPanel() {
       panelEl.innerHTML = '';
+
+      const header = document.createElement('div');
+      header.className = 'fc-member-filter-panel-header';
 
       const allBtn = document.createElement('button');
       allBtn.type = 'button';
       allBtn.className = 'fc-btn fc-btn-small fc-member-filter-all';
       allBtn.textContent = 'すべて表示';
       allBtn.addEventListener('click', () => Filter.selectAll());
-      panelEl.appendChild(allBtn);
+
+      const closeBtn = document.createElement('button');
+      closeBtn.type = 'button';
+      closeBtn.className = 'fc-member-filter-close';
+      closeBtn.setAttribute('aria-label', '閉じる');
+      closeBtn.textContent = '×';
+      closeBtn.addEventListener('click', close);
+
+      header.appendChild(allBtn);
+      header.appendChild(closeBtn);
+      panelEl.appendChild(header);
 
       State.data.members.forEach((m) => {
         const label = document.createElement('label');
@@ -31,6 +48,7 @@
 
         const checkbox = document.createElement('input');
         checkbox.type = 'checkbox';
+        checkbox.dataset.memberId = m.id;
         checkbox.checked = Filter.isSelected(m.id);
         checkbox.addEventListener('change', () => Filter.toggle(m.id));
 
@@ -48,29 +66,44 @@
       });
     }
 
-    function refresh() {
-      buttonEl.textContent = computeButtonLabel();
-      if (!panelEl.hidden) renderPanel();
+    // チェックのオン/オフだけの変化ではパネル全体を作り直さず、チェック状態のみ更新する
+    // (開いている間に要素を丸ごと差し替えると、操作中の閉じる判定が不安定になるため)
+    function syncCheckedStates() {
+      panelEl.querySelectorAll('input[type="checkbox"]').forEach((cb) => {
+        cb.checked = Filter.isSelected(cb.dataset.memberId);
+      });
     }
 
-    refresh();
-    State.onChange(refresh);
-    Filter.onChange(refresh);
+    function refreshButtonLabel() {
+      buttonEl.textContent = computeButtonLabel();
+    }
+
+    refreshButtonLabel();
+
+    State.onChange(() => {
+      refreshButtonLabel();
+      if (!panelEl.hidden) renderPanel();
+    });
+    Filter.onChange(() => {
+      refreshButtonLabel();
+      if (!panelEl.hidden) syncCheckedStates();
+    });
 
     buttonEl.addEventListener('click', (ev) => {
       ev.stopPropagation();
+      const opening = panelEl.hidden;
       panelEl.hidden = !panelEl.hidden;
-      if (!panelEl.hidden) renderPanel();
+      if (opening) renderPanel();
     });
 
     document.addEventListener('click', (ev) => {
       if (panelEl.hidden) return;
       if (panelEl.contains(ev.target) || ev.target === buttonEl) return;
-      panelEl.hidden = true;
+      close();
     });
 
     document.addEventListener('keydown', (ev) => {
-      if (ev.key === 'Escape') panelEl.hidden = true;
+      if (ev.key === 'Escape') close();
     });
   }
 

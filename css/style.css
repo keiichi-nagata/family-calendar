@@ -130,9 +130,22 @@ button {
   gap: 6px;
 }
 
-.fc-member-filter-all {
-  align-self: flex-start;
+.fc-member-filter-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
   margin-bottom: 2px;
+}
+
+.fc-member-filter-close {
+  border: none;
+  background: transparent;
+  font-size: 1.2rem;
+  line-height: 1;
+  color: var(--fc-text-muted);
+  cursor: pointer;
+  padding: 0 4px;
 }
 
 .fc-member-filter-item {
@@ -767,8 +780,26 @@ button {
 
 @media (max-width: 720px) {
   .fc-btn {
-    padding: 6px 9px;
-    font-size: 0.82rem;
+    padding: 5px 7px;
+    font-size: 0.76rem;
+  }
+
+  .fc-nav-btn {
+    width: 28px;
+    padding: 5px 0;
+  }
+
+  .fc-tab-btn {
+    padding: 5px 8px;
+    font-size: 0.78rem;
+  }
+
+  .fc-header-controls {
+    gap: 6px;
+  }
+
+  .fc-nav-controls {
+    gap: 3px;
   }
 
   .fc-month-cell {
@@ -811,8 +842,17 @@ button {
 
 @media (max-width: 480px) {
   .fc-tab-btn {
-    padding: 6px 8px;
-    font-size: 0.8rem;
+    padding: 4px 6px;
+    font-size: 0.72rem;
+  }
+
+  .fc-btn {
+    padding: 4px 6px;
+    font-size: 0.7rem;
+  }
+
+  .fc-nav-btn {
+    width: 24px;
   }
 
   .fc-month-cell-date,
