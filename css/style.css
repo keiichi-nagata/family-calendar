@@ -130,6 +130,12 @@ button {
   gap: 6px;
 }
 
+/* display:flex を指定すると hidden 属性の既定スタイル(display:none)を上書きしてしまうため、
+   hidden 属性がある場合は明示的に非表示にする */
+.fc-member-filter-panel[hidden] {
+  display: none;
+}
+
 .fc-member-filter-panel-header {
   display: flex;
   align-items: center;
