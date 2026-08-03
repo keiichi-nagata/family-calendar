@@ -5,6 +5,7 @@
   const U = global.FCUtils;
   const State = global.FCState;
   const Holidays = global.FCHolidays;
+  const Filter = global.FCFilter;
 
   const ROW_LABEL_WIDTH = 96; // css の .fc-timeline-corner / .fc-timeline-row-label と一致させる
   const MIN_HOUR_WIDTH = 48; // 画面が狭い場合でも最低限これ以上は確保する
@@ -28,11 +29,13 @@
   function explodeByMember(events) {
     const out = [];
     events.forEach((evt) => {
-      const members = State.getMembersByIds(evt.memberIds);
-      if (members.length === 0) {
+      const assignedMembers = State.getMembersByIds(evt.memberIds);
+      if (assignedMembers.length === 0) {
         out.push({ evt, member: null });
       } else {
-        members.forEach((member) => out.push({ evt, member }));
+        assignedMembers
+          .filter((member) => Filter.isSelected(member.id))
+          .forEach((member) => out.push({ evt, member }));
       }
     });
     return out;

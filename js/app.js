@@ -90,6 +90,16 @@
     global.FCSettings.open();
   });
 
+  if (global.FCMemberFilter) {
+    global.FCMemberFilter.init(
+      document.getElementById('memberFilterBtn'),
+      document.getElementById('memberFilterPanel')
+    );
+  }
+  if (global.FCFilter) {
+    global.FCFilter.onChange(renderCalendar);
+  }
+
   State.onChange(renderCalendar);
   if (global.FCSync) {
     global.FCSync.onStatusChange((status, message) => {

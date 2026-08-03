@@ -110,6 +110,40 @@ button {
   color: #fff;
 }
 
+.fc-member-filter {
+  position: relative;
+}
+
+.fc-member-filter-panel {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  background: var(--fc-surface);
+  border: 1px solid var(--fc-border);
+  border-radius: 8px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+  padding: 8px 10px;
+  z-index: 50;
+  min-width: 150px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fc-member-filter-all {
+  align-self: flex-start;
+  margin-bottom: 2px;
+}
+
+.fc-member-filter-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.86rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
 .fc-nav-controls {
   display: flex;
   align-items: center;

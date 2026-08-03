@@ -5,6 +5,7 @@
   const U = global.FCUtils;
   const State = global.FCState;
   const Holidays = global.FCHolidays;
+  const Filter = global.FCFilter;
 
   function dateColorClass(date) {
     if (Holidays.getHolidayName(date)) return 'fc-color-holiday';
@@ -37,11 +38,13 @@
   function getSortedInstances(dateKey) {
     const instances = [];
     State.getEventsForDate(dateKey).forEach((evt) => {
-      const members = State.getMembersByIds(evt.memberIds);
-      if (members.length === 0) {
+      const assignedMembers = State.getMembersByIds(evt.memberIds);
+      if (assignedMembers.length === 0) {
         instances.push({ evt, member: null });
       } else {
-        members.forEach((member) => instances.push({ evt, member }));
+        assignedMembers
+          .filter((member) => Filter.isSelected(member.id))
+          .forEach((member) => instances.push({ evt, member }));
       }
     });
     instances.sort((a, b) => {
