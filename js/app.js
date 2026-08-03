@@ -9,22 +9,26 @@
   let currentDate = new Date();
 
   const periodTitleEl = document.getElementById('periodTitle');
+  const periodTitleMobileEl = document.getElementById('periodTitleMobile');
   const calendarBodyEl = document.getElementById('calendarBody');
   const tabButtons = Array.from(document.querySelectorAll('.fc-tab-btn'));
 
   function updatePeriodTitle() {
+    let text;
     if (currentView === 'month') {
-      periodTitleEl.textContent = U.formatMonthTitle(currentDate);
+      text = U.formatMonthTitle(currentDate);
     } else if (currentView === 'day') {
-      periodTitleEl.textContent = U.formatDayTitle(currentDate);
+      text = U.formatDayTitle(currentDate);
     } else {
       const start = U.startOfWeek(currentDate);
       const end = U.addDays(start, 6);
       const sameMonth = start.getMonth() === end.getMonth();
-      periodTitleEl.textContent = sameMonth
+      text = sameMonth
         ? `${start.getFullYear()}年${start.getMonth() + 1}月${start.getDate()}日 〜 ${end.getDate()}日`
         : `${start.getMonth() + 1}月${start.getDate()}日 〜 ${end.getMonth() + 1}月${end.getDate()}日`;
     }
+    periodTitleEl.textContent = text;
+    periodTitleMobileEl.textContent = text;
   }
 
   const eventCallbacks = {

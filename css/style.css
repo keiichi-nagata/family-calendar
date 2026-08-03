@@ -65,6 +65,13 @@ button {
   white-space: nowrap;
 }
 
+.fc-period-title-mobile {
+  display: none;
+  margin: 0;
+  font-size: 1.05rem;
+  white-space: nowrap;
+}
+
 .fc-header-top-actions {
   display: flex;
   gap: 8px;
@@ -701,9 +708,14 @@ button {
 }
 
 /* ---------- レスポンシブ ---------- */
-@media (max-width: 720px) {
+/* 画面が狭い、または横向きスマホのように縦が低い場合はヘッダーを2行に圧縮する */
+@media (max-width: 720px), (max-height: 500px) {
   .fc-app-title {
-    font-size: 1.05rem;
+    display: none;
+  }
+
+  .fc-period-title-mobile {
+    display: block;
   }
 
   .fc-header {
@@ -715,11 +727,11 @@ button {
   }
 
   .fc-period-title {
-    order: 3;
-    width: 100%;
-    text-align: center;
+    display: none;
   }
+}
 
+@media (max-width: 720px) {
   .fc-btn {
     padding: 6px 9px;
     font-size: 0.82rem;
