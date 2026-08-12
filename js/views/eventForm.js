@@ -1,4 +1,4 @@
-/* 予定の新規作成・編集フォーム（詳細確認・メモ閲覧も兼ねる） */
+/* 予定の新規作成・編集フォーム（詳細確認・メモ閲覧・コピー作成も兼ねる） */
 (function (global) {
   'use strict';
 
@@ -31,19 +31,26 @@
     return div.innerHTML;
   }
 
+  // options:
+  //  - eventId: 既存の予定を編集する場合のID
+  //  - duplicateFrom: 既存の予定オブジェクトをコピーして新規作成する場合
+  //  - date, time: 新規作成時の初期日時
   function open(options, onSaved) {
     const editing = !!options.eventId;
     const existing = editing ? State.data.events.find((e) => e.id === options.eventId) : null;
+    const duplicateFrom = !editing ? options.duplicateFrom : null;
 
-    const initial = existing || {
+    const initial = existing || duplicateFrom || {
       title: '',
       date: options.date || U.formatDateKey(new Date()),
+      endDate: options.date || U.formatDateKey(new Date()),
       allDay: !options.time,
       startTime: options.time != null ? U.minutesToTime(options.time) : '09:00',
       endTime: options.time != null ? U.minutesToTime(Math.min(options.time + 60, 23 * 60 + 59)) : '10:00',
       memberIds: [],
       memo: '',
     };
+    const initialEndDate = initial.endDate || initial.date;
 
     const wrap = document.createElement('div');
     wrap.className = 'fc-event-form';
@@ -59,10 +66,13 @@
         <label>タイトル<span class="fc-required">必須</span></label>
         <input type="text" class="fc-title-input" value="${escapeHtml(initial.title)}" placeholder="予定のタイトル" />
       </div>
-      <div class="fc-form-row">
-        <label>日付</label>
+      <div class="fc-form-row fc-date-range-row">
+        <label>開始日</label>
         <input type="date" class="fc-date-input" value="${initial.date}" />
+        <label>終了日</label>
+        <input type="date" class="fc-end-date-input" value="${initialEndDate}" />
       </div>
+      <p class="fc-date-range-hint" hidden>複数日にまたがる予定は終日として登録されます。</p>
       <div class="fc-form-row fc-form-row-checkbox">
         <label><input type="checkbox" class="fc-allday-input" ${initial.allDay ? 'checked' : ''} /> 終日</label>
       </div>
@@ -81,7 +91,10 @@
         <textarea class="fc-memo-input" rows="4" placeholder="メモを入力">${escapeHtml(initial.memo)}</textarea>
       </div>
       <div class="fc-form-actions">
-        ${editing ? '<button type="button" class="fc-btn fc-btn-danger fc-delete-btn">削除</button>' : '<span></span>'}
+        <div class="fc-form-actions-left">
+          ${editing ? '<button type="button" class="fc-btn fc-btn-danger fc-delete-btn">削除</button>' : ''}
+          ${editing ? '<button type="button" class="fc-btn fc-btn-secondary fc-copy-btn">コピー</button>' : ''}
+        </div>
         <div class="fc-form-actions-right">
           <button type="button" class="fc-btn fc-btn-secondary fc-cancel-btn">キャンセル</button>
           <button type="button" class="fc-btn fc-btn-primary fc-save-btn">保存</button>
@@ -92,6 +105,8 @@
     const templateSelect = wrap.querySelector('.fc-template-select');
     const titleInput = wrap.querySelector('.fc-title-input');
     const dateInput = wrap.querySelector('.fc-date-input');
+    const endDateInput = wrap.querySelector('.fc-end-date-input');
+    const dateRangeHint = wrap.querySelector('.fc-date-range-hint');
     const allDayInput = wrap.querySelector('.fc-allday-input');
     const timeRow = wrap.querySelector('.fc-time-row');
     const startTimeInput = wrap.querySelector('.fc-start-time-input');
@@ -101,14 +116,37 @@
     function syncTimeVisibility() {
       timeRow.style.display = allDayInput.checked ? 'none' : '';
     }
-    syncTimeVisibility();
+
+    function isMultiDay() {
+      return endDateInput.value && dateInput.value && endDateInput.value !== dateInput.value;
+    }
+
+    function syncDateRange() {
+      if (endDateInput.value && dateInput.value && endDateInput.value < dateInput.value) {
+        endDateInput.value = dateInput.value;
+      }
+      const multiDay = isMultiDay();
+      dateRangeHint.hidden = !multiDay;
+      if (multiDay) {
+        allDayInput.checked = true;
+        allDayInput.disabled = true;
+      } else {
+        allDayInput.disabled = false;
+      }
+      syncTimeVisibility();
+    }
+
+    syncDateRange();
+    dateInput.addEventListener('change', syncDateRange);
+    endDateInput.addEventListener('change', syncDateRange);
     allDayInput.addEventListener('change', syncTimeVisibility);
 
     templateSelect.addEventListener('change', () => {
       if (templateSelect.value) titleInput.value = templateSelect.value;
     });
 
-    const modalHandle = global.FCModal.show(editing ? '予定の詳細・編集' : '予定の新規作成', wrap);
+    const modalTitle = editing ? '予定の詳細・編集' : duplicateFrom ? '予定をコピーして作成' : '予定の新規作成';
+    const modalHandle = global.FCModal.show(modalTitle, wrap);
 
     wrap.querySelector('.fc-cancel-btn').addEventListener('click', () => modalHandle.close());
 
@@ -123,6 +161,15 @@
       });
     }
 
+    const copyBtn = wrap.querySelector('.fc-copy-btn');
+    if (copyBtn) {
+      copyBtn.addEventListener('click', () => {
+        const source = State.data.events.find((e) => e.id === options.eventId);
+        modalHandle.close();
+        open({ duplicateFrom: source }, onSaved);
+      });
+    }
+
     wrap.querySelector('.fc-save-btn').addEventListener('click', () => {
       const title = titleInput.value.trim();
       if (!title) {
@@ -131,8 +178,13 @@
         return;
       }
       const date = dateInput.value;
+      const endDate = endDateInput.value || date;
       if (!date) {
         alert('日付を入力してください。');
+        return;
+      }
+      if (endDate < date) {
+        alert('終了日は開始日以降にしてください。');
         return;
       }
       const allDay = allDayInput.checked;
@@ -153,7 +205,7 @@
       const memberIds = Array.from(wrap.querySelectorAll('.fc-member-list input:checked')).map((el) => el.value);
       const memo = memoInput.value;
 
-      const payload = { title, date, allDay, startTime, endTime, memberIds, memo };
+      const payload = { title, date, endDate, allDay, startTime, endTime, memberIds, memo };
       if (editing) {
         State.updateEvent(options.eventId, payload);
       } else {

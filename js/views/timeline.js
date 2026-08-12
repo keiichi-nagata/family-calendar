@@ -100,13 +100,15 @@
     const bg = member ? member.color : '#9e9e9e';
     const textColor = member ? U.contrastTextColor(member.color) : '#ffffff';
     const namePrefix = member ? `[${member.name}] ` : '';
+    const isMultiDay = evt.endDate && evt.endDate !== evt.date;
+    const rangePrefix = isMultiDay ? `${evt.date}〜${evt.endDate} ` : '';
 
     const bar = document.createElement('div');
     bar.className = 'fc-allday-bar';
     bar.style.background = bg;
     bar.style.color = textColor;
     bar.dataset.eventId = evt.id;
-    bar.title = `${namePrefix}${evt.title}`;
+    bar.title = `${rangePrefix}${namePrefix}${evt.title}`;
 
     // 予定名は既定の表示開始位置である8:00の位置から見えるようにする
     const label = document.createElement('span');

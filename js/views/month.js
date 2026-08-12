@@ -18,11 +18,14 @@
     const bg = member ? member.color : '#9e9e9e';
     const textColor = member ? U.contrastTextColor(member.color) : '#ffffff';
     const namePrefix = member ? `[${member.name}] ` : '';
-    const timePrefix = evt.allDay
-      ? '終日 '
-      : evt.startTime
-        ? `${evt.startTime}${evt.endTime ? '〜' + evt.endTime : ''} `
-        : '';
+    const isMultiDay = evt.endDate && evt.endDate !== evt.date;
+    const timePrefix = isMultiDay
+      ? `${evt.date}〜${evt.endDate} `
+      : evt.allDay
+        ? '終日 '
+        : evt.startTime
+          ? `${evt.startTime}${evt.endTime ? '〜' + evt.endTime : ''} `
+          : '';
 
     const chip = document.createElement('div');
     chip.className = 'fc-event-chip';

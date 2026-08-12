@@ -594,20 +594,29 @@ button {
   color: var(--fc-text);
 }
 
-.fc-time-row {
+.fc-time-row,
+.fc-date-range-row {
   flex-direction: row;
   align-items: center;
   flex-wrap: wrap;
   gap: 8px;
 }
 
-.fc-time-row label {
+.fc-time-row label,
+.fc-date-range-row label {
   flex: 0 0 auto;
 }
 
-.fc-time-row input[type="time"] {
+.fc-time-row input[type="time"],
+.fc-date-range-row input[type="date"] {
   width: auto;
   flex: 1 1 100px;
+}
+
+.fc-date-range-hint {
+  font-size: 0.76rem;
+  color: var(--fc-text-muted);
+  margin: -6px 0 0;
 }
 
 .fc-member-list {
@@ -643,6 +652,7 @@ button {
   gap: 10px;
 }
 
+.fc-form-actions-left,
 .fc-form-actions-right {
   display: flex;
   gap: 8px;

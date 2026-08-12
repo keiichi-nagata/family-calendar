@@ -100,7 +100,7 @@
 
   function getEventsForDate(dateKey) {
     return data.events
-      .filter((e) => e.date === dateKey)
+      .filter((e) => dateKey >= e.date && dateKey <= (e.endDate || e.date))
       .sort((a, b) => {
         if (a.allDay && !b.allDay) return -1;
         if (!a.allDay && b.allDay) return 1;
