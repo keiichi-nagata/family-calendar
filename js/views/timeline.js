@@ -51,14 +51,30 @@
     });
   }
 
-  function assignLanes(instances) {
-    const items = instances.map((inst) => ({
-      inst,
-      start: U.timeToMinutes(inst.evt.startTime),
-      end: inst.evt.endTime
-        ? U.timeToMinutes(inst.evt.endTime)
-        : U.timeToMinutes(inst.evt.startTime) + DEFAULT_DURATION,
-    }));
+  // 複数日にまたがる時間指定の予定は、対象日が開始日か終了日かによって
+  // その日に見える時間帯を切り出す（開始日は開始時刻〜24:00、終了日は0:00〜終了時刻、中間日は終日）
+  function computeClippedRange(evt, dateKey) {
+    const isFirstDay = dateKey === evt.date;
+    const isLastDay = dateKey === (evt.endDate || evt.date);
+    if (isFirstDay && isLastDay) {
+      const start = U.timeToMinutes(evt.startTime);
+      const end = evt.endTime ? U.timeToMinutes(evt.endTime) : start + DEFAULT_DURATION;
+      return { start, end };
+    }
+    if (isFirstDay) {
+      return { start: U.timeToMinutes(evt.startTime), end: 24 * 60 };
+    }
+    if (isLastDay) {
+      return { start: 0, end: evt.endTime ? U.timeToMinutes(evt.endTime) : 24 * 60 };
+    }
+    return { start: 0, end: 24 * 60 };
+  }
+
+  function assignLanes(instances, dateKey) {
+    const items = instances.map((inst) => {
+      const range = computeClippedRange(inst.evt, dateKey);
+      return { inst, start: range.start, end: range.end };
+    });
 
     const laneEnds = [];
     items.forEach((item) => {
@@ -77,6 +93,10 @@
     const bg = member ? member.color : '#9e9e9e';
     const textColor = member ? U.contrastTextColor(member.color) : '#ffffff';
     const namePrefix = member ? `[${member.name}] ` : '';
+    const isMultiDay = evt.endDate && evt.endDate !== evt.date;
+    const timeInfo = isMultiDay
+      ? `${evt.date} ${evt.startTime}〜${evt.endDate} ${evt.endTime || ''}`
+      : `${evt.startTime}${evt.endTime ? '〜' + evt.endTime : ''}`;
 
     const left = (item.start / 60) * hourWidth;
     const width = Math.max(((item.end - item.start) / 60) * hourWidth, 24);
@@ -90,7 +110,7 @@
     block.style.background = bg;
     block.style.color = textColor;
     block.dataset.eventId = evt.id;
-    block.title = `${evt.startTime}${evt.endTime ? '〜' + evt.endTime : ''} ${namePrefix}${evt.title}`;
+    block.title = `${timeInfo} ${namePrefix}${evt.title}`;
     block.textContent = `${namePrefix}${evt.title}`;
     return block;
   }
@@ -175,7 +195,7 @@
       main.appendChild(stripWrap);
     }
 
-    const { items, laneCount } = assignLanes(timedInstances);
+    const { items, laneCount } = assignLanes(timedInstances, dateKey);
     const track = document.createElement('div');
     track.className = 'fc-timeline-track';
     track.style.width = `${trackWidth}px`;

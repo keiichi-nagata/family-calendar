@@ -72,7 +72,7 @@
         <label>終了日</label>
         <input type="date" class="fc-end-date-input" value="${initialEndDate}" />
       </div>
-      <p class="fc-date-range-hint" hidden>複数日にまたがる予定は終日として登録されます。</p>
+      <p class="fc-date-range-hint" hidden>複数日にまたがる予定です。時刻を指定すると、開始日は開始時刻から、終了日は終了時刻までの予定になります。</p>
       <div class="fc-form-row fc-form-row-checkbox">
         <label><input type="checkbox" class="fc-allday-input" ${initial.allDay ? 'checked' : ''} /> 終日</label>
       </div>
@@ -125,14 +125,7 @@
       if (endDateInput.value && dateInput.value && endDateInput.value < dateInput.value) {
         endDateInput.value = dateInput.value;
       }
-      const multiDay = isMultiDay();
-      dateRangeHint.hidden = !multiDay;
-      if (multiDay) {
-        allDayInput.checked = true;
-        allDayInput.disabled = true;
-      } else {
-        allDayInput.disabled = false;
-      }
+      dateRangeHint.hidden = !isMultiDay();
       syncTimeVisibility();
     }
 
@@ -188,6 +181,7 @@
         return;
       }
       const allDay = allDayInput.checked;
+      const multiDay = endDate !== date;
       let startTime = null;
       let endTime = null;
       if (!allDay) {
@@ -197,7 +191,8 @@
           alert('開始時刻を入力してください。');
           return;
         }
-        if (endTime && endTime <= startTime) {
+        // 複数日にまたがる予定は、終了時刻が翌日以降になるため開始時刻との前後比較は行わない
+        if (!multiDay && endTime && endTime <= startTime) {
           alert('終了時刻は開始時刻より後にしてください。');
           return;
         }

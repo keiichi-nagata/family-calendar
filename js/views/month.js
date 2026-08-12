@@ -19,20 +19,22 @@
     const textColor = member ? U.contrastTextColor(member.color) : '#ffffff';
     const namePrefix = member ? `[${member.name}] ` : '';
     const isMultiDay = evt.endDate && evt.endDate !== evt.date;
-    const timePrefix = isMultiDay
-      ? `${evt.date}〜${evt.endDate} `
-      : evt.allDay
-        ? '終日 '
-        : evt.startTime
-          ? `${evt.startTime}${evt.endTime ? '〜' + evt.endTime : ''} `
-          : '';
+
+    let tooltipPrefix;
+    if (evt.allDay) {
+      tooltipPrefix = isMultiDay ? `${evt.date}〜${evt.endDate} ` : '終日 ';
+    } else if (isMultiDay) {
+      tooltipPrefix = `${evt.date} ${evt.startTime}〜${evt.endDate} ${evt.endTime || ''} `;
+    } else {
+      tooltipPrefix = evt.startTime ? `${evt.startTime}${evt.endTime ? '〜' + evt.endTime : ''} ` : '';
+    }
 
     const chip = document.createElement('div');
     chip.className = 'fc-event-chip';
     chip.style.background = bg;
     chip.style.color = textColor;
     chip.dataset.eventId = evt.id;
-    chip.title = `${timePrefix}${namePrefix}${evt.title}`;
+    chip.title = `${tooltipPrefix}${namePrefix}${evt.title}`;
     chip.textContent = `${namePrefix}${evt.title}`;
     return chip;
   }
