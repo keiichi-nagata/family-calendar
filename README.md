@@ -54,20 +54,25 @@
 ### 4. セキュリティルールを設定する
 
 Firestore Database → 「ルール」タブを開き、以下の内容に書き換えて公開してください。
-これにより「匿名ログイン済みの人だけ」がデータを読み書きできるようになります。
+これにより「匿名ログイン済みの人が、共有コードを指定して」データを読み書きできるようになります。
 
 ```
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     match /families/{familyCode} {
-      allow read, write: if request.auth != null;
+      allow get: if request.auth != null;
+      allow list: if false;
+      allow write: if request.auth != null;
     }
   }
 }
 ```
 
-> 注意: これは「共有コード（familyCode）を知っている人なら誰でも読み書きできる」簡易的な仕組みです。
+> 注意: `allow read` とだけ書くと、匿名ログインさえすれば共有コードを知らない第三者でも
+> 全家族分のデータを一覧取得（list）できてしまいます。`allow get` と `allow list: if false` に
+> 分けることで、「特定の共有コードを指定した場合のみ読み取り可能・一覧取得は不可」にできます。
+> これでも「共有コード（familyCode）を知っている人なら誰でも読み書きできる」簡易的な仕組みであることに変わりはありません。
 > パスワードのように扱い、第三者に漏らさないよう共有コードを管理してください。
 > より厳密なアクセス制御（家族単位のログイン認証など）が必要な場合は、匿名認証ではなくメール/パスワード認証やGoogleログインを導入し、
 > セキュリティルールで「そのユーザー自身の家族データのみ」にアクセスを制限するような改修が別途必要です（本アプリの標準機能には含まれていません）。
