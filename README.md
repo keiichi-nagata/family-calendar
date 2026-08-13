@@ -34,7 +34,7 @@
 ### 1. Firebaseプロジェクトを作成する
 
 1. https://console.firebase.google.com/ をブラウザで開き、Googleアカウントでログイン
-2. 「プロジェクトを追加」→ 好きなプロジェクト名（例: `family-calendar`）を入力して作成
+2. 「プロジェクトを追加」（画面表示によっては「Firebaseプロジェクトを設定して開始」）をクリックし、好きなプロジェクト名（例: `family-calendar`）を入力して作成
    （Googleアナリティクスは不要なのでオフのままで構いません）
 
 ### 2. Firestore Database を有効化する
